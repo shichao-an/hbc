@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# HandBrake Cutter
+
+set -e
+usage='usage: [OUTDIR=output_directory] hbc FILENAME START-TIME STOP-TIME'
+
+show_help() {
+   echo "$usage" >&2 
+}
+
+# Convert format time (HH:MM:SS) to seconds
+time2seconds() {
+    echo "$1" | awk -F: '{
+        if (NF > 3) {
+            print "Invalid time format." > "/dev/stderr" 
+            exit 1
+        }
+        base = 60
+        res = 0
+        for (i = 1; i <= NF; i++) { 
+            res = res * base + $i 
+        }
+        print res
+    }'
+}
+
+OUTDIR="${OUTDIR:-~/.hbc}"
+mkdir -p "$OUTPUT_DIR"
+filename=$(echo ${1// /_})
+start_time=$(time2seconds $2)
+stop_time=$(time2seconds $3)
+echo "Output directory is $OUTPUT_DIR."
+HandBrakeCLI -i "$1" -o "$OUTDIR/$(basename $filename)" \
+    --start-at duration:$start_time \
+    --stop-at duration:$(echo "$stop_time - $start_time" | bc)
