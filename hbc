@@ -24,12 +24,16 @@ time2seconds() {
     }'
 }
 
-OUTDIR="${OUTDIR:-~/.hbc}"
-mkdir -p "$OUTPUT_DIR"
+eval OUTDIR="${OUTDIR:-~/.hbc}"
+mkdir -p "$OUTDIR"
 filename=$(echo ${1// /_})
 start_time=$(time2seconds $2)
 stop_time=$(time2seconds $3)
 echo "Output directory is $OUTPUT_DIR."
+which HandBrakeCLI &> /dev/null || {
+    echo 'HandBrakeCLI command is not found. Please install it to PATH.' >&2
+    exit 1
+}
 HandBrakeCLI -i "$1" -o "$OUTDIR/$(basename $filename)" \
     --start-at duration:$start_time \
     --stop-at duration:$(echo "$stop_time - $start_time" | bc)
