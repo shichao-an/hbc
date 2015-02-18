@@ -1,17 +1,19 @@
 HBC
 ===
 
-HandBrake Cutter (HBC) is a command-line wrapper for HandBrakeCLI that cut or extract video clips by human-readable time.
+HandBrake Cutter (HBC) is a command-line wrapper for HandBrakeCLI that cuts or extracts video clips by human-readable time format.
 
 ## Requirements
 
-Make sure you have installed the [command line version of HandBrake](https://handbrake.fr/downloads2.php) and place the binary into any "PATH" (e.g. /usr/local/bin).
+Make sure you have installed the [command line version of HandBrake](https://handbrake.fr/downloads2.php) and place the binary into any "PATH" (e.g. `/usr/local/bin`).
 
 ## Usage
 
-Time format are HH:MM:SS or MM:SS, or SS (simply seconds):
+Time format are `HH:MM:SS` or `MM:SS`, or `SS` (simply seconds):
 
-    $ hbc FILENAME START-TIME STOP-TIME
+    [OUTDIR=output_directory] hbc FILENAME START-TIME STOP-TIME
+
+By default, if you don't pass the OUTDIR environment variable, output directory will be `~/.hbc`.
 
 ## Example
 
