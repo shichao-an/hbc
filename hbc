@@ -2,10 +2,10 @@
 # HandBrake Cutter
 
 set -e
-usage='usage: [OUTDIR=output_directory] hbc FILENAME START-TIME STOP-TIME'
+USAGE='usage: [OUTDIR=output_directory] hbc FILENAME START-TIME STOP-TIME'
 
 show_help() {
-   echo "$usage" >&2 
+   echo "$USAGE" >&2
 }
 
 # Convert format time (HH:MM:SS) to seconds
@@ -26,14 +26,14 @@ time2seconds() {
 
 eval OUTDIR="${OUTDIR:-~/.hbc}"
 mkdir -p "$OUTDIR"
-filename=$(echo ${1// /_})
-start_time=$(time2seconds $2)
-stop_time=$(time2seconds $3)
+FILENAME=$(echo ${1// /_})
+START_TIME=$(time2seconds $2)
+STOP_TIME=$(time2seconds $3)
 echo "Output directory is $OUTPUT_DIR."
 which HandBrakeCLI &> /dev/null || {
     echo 'HandBrakeCLI command is not found. Please install it to PATH.' >&2
     exit 1
 }
-HandBrakeCLI -i "$1" -o "$OUTDIR/$(basename $filename)" \
-    --start-at duration:$start_time \
-    --stop-at duration:$(echo "$stop_time - $start_time" | bc)
+HandBrakeCLI -i "$1" -o "$OUTDIR/$(basename $FILENAME)" \
+    --start-at duration:$START_TIME \
+    --stop-at duration:$(echo "$STOP_TIME - $START_TIME" | bc)
