@@ -24,6 +24,11 @@ time2seconds() {
     }'
 }
 
+[ $# -ne 3 ] && {
+    show_help
+    exit 1
+}
+
 eval OUTDIR="${OUTDIR:-~/.hbc}"
 mkdir -p "$OUTDIR"
 FILENAME=$(echo ${1// /_})
