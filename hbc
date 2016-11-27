@@ -24,7 +24,6 @@ time2seconds() {
     }'
 }
 
-
 autoincr() {
     f="$1"
     ext=""
@@ -43,6 +42,11 @@ autoincr() {
         f="${f}_${i}${ext}"
     fi
     echo "$f"
+}
+
+[ $# -ne 3 ] && {
+    show_help
+    exit 1
 }
 
 eval OUTDIR="${OUTDIR:-~/.hbc}"
