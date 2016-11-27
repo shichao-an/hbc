@@ -12,28 +12,51 @@ show_help() {
 time2seconds() {
     echo "$1" | awk -F: '{
         if (NF > 3) {
-            print "Invalid time format." > "/dev/stderr" 
+            print "Invalid time format." > "/dev/stderr"
             exit 1
         }
         base = 60
         res = 0
-        for (i = 1; i <= NF; i++) { 
-            res = res * base + $i 
+        for (i = 1; i <= NF; i++) {
+            res = res * base + $i
         }
         print res
     }'
 }
 
+
+autoincr() {
+    f="$1"
+    ext=""
+
+    # Extract the file extension (if any), with preceeding '.'
+    [[ "$f" == *.* ]] && ext=".${f##*.}"
+
+    if [[ -e "$f" ]] ; then
+        i=1
+        f="${f%.*}";
+
+        while [[ -e "${f}_${i}${ext}" ]]; do
+            let i++
+        done
+
+        f="${f}_${i}${ext}"
+    fi
+    echo "$f"
+}
+
 eval OUTDIR="${OUTDIR:-~/.hbc}"
 mkdir -p "$OUTDIR"
-FILENAME=$(echo ${1// /_})
-START_TIME=$(time2seconds $2)
-STOP_TIME=$(time2seconds $3)
-echo "Output directory is $OUTPUT_DIR."
+FILENAME="$(echo "${1// /_}")"
+BITRATE="$(ffmpeg -i "$1" |& grep -o 'bitrate.*$' | awk '{ print $2 }')"
+START_TIME="$(time2seconds "$2")"
+STOP_TIME="$(time2seconds "$3")"
+echo "Output directory is $OUTDIR."
 which HandBrakeCLI &> /dev/null || {
     echo 'HandBrakeCLI command is not found. Please install it to PATH.' >&2
     exit 1
 }
-HandBrakeCLI -i "$1" -o "$OUTDIR/$(basename $FILENAME)" \
-    --start-at duration:$START_TIME \
-    --stop-at duration:$(echo "$STOP_TIME - $START_TIME" | bc)
+HandBrakeCLI -i "$1" -o "$(autoincr "$OUTDIR/$(basename "$FILENAME")")" \
+    -b "$BITRATE" \
+    --start-at "duration:$START_TIME" \
+    --stop-at "duration:$(echo "$STOP_TIME - $START_TIME" | bc)"
